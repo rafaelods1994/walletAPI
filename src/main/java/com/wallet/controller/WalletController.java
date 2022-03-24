@@ -1,4 +1,5 @@
 package com.wallet.controller;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,36 +11,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wallet.dto.UserDTO;
-import com.wallet.entities.User;
+import com.wallet.dto.WalletDTO;
+import com.wallet.entities.Wallet;
 import com.wallet.response.Response;
-import com.wallet.service.UserService;
+import com.wallet.service.WalletService;
 import com.wallet.utils.Util;
 
 @RestController
-@RequestMapping("user")
-public class UserController {
+@RequestMapping("wallet")
+public class WalletController {
 	
 	@Autowired
-	private UserService userService;
+	private WalletService walletService;
 	
 	@PostMapping
-	public ResponseEntity<Response<UserDTO>> createUser(@Valid @RequestBody UserDTO userDto, BindingResult bindingResult) 
-	{
-		Response<UserDTO> response = new Response<UserDTO>();
+	public ResponseEntity<Response<WalletDTO>> create(@Valid @RequestBody WalletDTO walletDto, BindingResult result) {
 		
-		if (bindingResult.hasErrors()) {
-			
-			bindingResult.getAllErrors().forEach(erro-> response.getErrors().add(erro.getDefaultMessage()));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-
+		Response<WalletDTO> response = new Response<WalletDTO>();
+		if(result.hasErrors())
+		{
+			result.getAllErrors().forEach(erro -> response.getErrors().add(erro.getDefaultMessage()));
+			return ResponseEntity.badRequest().body(response);
 		}
 		
-		User user = userService.save(Util.convertUserDtoToEntity(userDto));
+		Wallet resonseWallet = walletService.save(Util.convertWalletDtoToEntity(walletDto));
 		
-		response.setData(Util.convertEntityToUserDto(user));
+		response.setData(Util.convertEntityToWalletDto(resonseWallet));
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		
 	}
 
 }
